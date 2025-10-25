@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Multi-Model App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>🧠 FakeBuster: Fake News & Spam Detection</h2>
+        <form action="/predict" method="post">
+            <label for="task">Choose Functionality:</label>
+            <select name="task" id="task">
+                <option value="fake_news" {% if task == "fake_news" %}selected{% endif %}>Fake News Detection</option>
+                <option value="spam" {% if task == "spam" %}selected{% endif %}>Spam Email Detection</option>
+            </select>
+
+            <label for="message">Enter your text:</label>
+            <textarea name="message" rows="6" placeholder="Type or paste text here...">{{ message or '' }}</textarea>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <h3>Prediction Result:</h3>
+            <p>{{ result }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
