@@ -4,31 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FakeBuster</title>
+    
+    <!-- Inline script to prevent flash of unstyled content -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            } else if (savedTheme === 'light') {
+                // Light mode - explicitly ensure no dark theme
+                document.documentElement.classList.remove('dark-theme');
+            } else {
+                // No saved preference - default to dark mode
+                document.documentElement.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+        })();
+    </script>
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h2>🛡️ FakeBuster: Fake News & Spam Detection</h2>
-        <form action="/predict" method="post">
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle-container">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <div class="toggle-track">
+                <div class="toggle-thumb">
+                    <span class="icon">🌙</span>
+                </div>
+            </div>
+        </button>
+        <!-- <span class="theme-label" id="themeLabel">Light Mode</span> -->
+    </div>
+    
+    <div class="wrapper">
+        <div class="container">
+            <h2>FakeBuster: Fake News & Spam Detection</h2>
+        <form action="/predict" method="post" id="predictionForm">
             <label for="task">Choose Functionality:</label>
-            <select name="task" id="task">
+            <select name="task" id="task" onchange="updatePlaceholder()">
                 <option value="fake_news" {% if task == "fake_news" %}selected{% endif %}>Fake News Detection</option>
                 <option value="spam" {% if task == "spam" %}selected{% endif %}>Spam Email Detection</option>
             </select>
 
             <label for="message">Enter your text:</label>
-            <textarea name="message" rows="6" placeholder="Type or paste text here...">{{ message or '' }}</textarea>
+            <textarea name="message" id="message" rows="6" placeholder="Enter news headline or article here...">{{ message or '' }}</textarea>
 
-            <button type="submit">Predict</button>
+            <div class="button-group">
+                <button type="submit" id="predictBtn">Predict</button>
+                <button type="button" id="clearBtn" onclick="clearForm()">Clear</button>
+            </div>
         </form>
 
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing...</p>
+        </div>
+
         {% if result %}
-        <div class="result">
+        <div class="result {{ 'result-real' if 'Real' in result or 'Not Spam' in result or 'Ham' in result else 'result-fake' }}">
             <h3>Prediction Result:</h3>
             <p>{{ result }}</p>
         </div>
         {% endif %}
     </div>
+    
+    <footer class="footer">
+        <p>Developed by Team FakeBuster | 2025</p>
+    </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
