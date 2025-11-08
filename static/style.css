@@ -178,7 +178,9 @@ body.dark-theme .theme-label {
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    width: 400px;
+    max-width: 420px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 h2 {
@@ -281,6 +283,77 @@ button:disabled {
     flex: 1;
 }
 
+/* Responsive tweaks */
+@media (max-width: 700px) {
+    .container {
+        padding: 20px;
+        margin: 0 12px;
+    }
+
+    h2 {
+        font-size: 1.2em;
+        gap: 8px;
+    }
+
+    .theme-toggle-container {
+        top: 18px;
+        right: 14px;
+        gap: 8px;
+    }
+
+    .theme-toggle {
+        width: 56px;
+        height: 28px;
+    }
+
+    .toggle-track {
+        width: 56px;
+        height: 28px;
+        border-radius: 14px;
+    }
+
+    .toggle-thumb {
+        width: 24px;
+        height: 24px;
+        top: 2px;
+        left: 2px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group button {
+        width: 100%;
+    }
+
+    textarea {
+        font-size: 14px;
+    }
+
+    .prob-label {
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 420px) {
+    .container {
+        padding: 16px;
+    }
+
+    h2 {
+        font-size: 1.05em;
+    }
+
+    .theme-toggle-container {
+        right: 8px;
+    }
+
+    .theme-label {
+        display: none; /* hide long label on very small screens */
+    }
+}
+
 #clearBtn {
     background-color: #6c757d;
 }
@@ -368,6 +441,59 @@ button:disabled {
 
 .result-fake h3 {
     color: #721c24;
+}
+
+/* Probability bar */
+.probability {
+    margin-top: 12px;
+    text-align: left;
+}
+
+.prob-label {
+    font-size: 0.95em;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.prob-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.prob-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.6s ease;
+    background: #28a745; /* default green */
+}
+
+.result-fake .prob-fill {
+    background: #dc3545;
+}
+
+.result-real .prob-fill {
+    background: #28a745;
+}
+
+.explanation {
+    margin-top: 12px;
+    text-align: left;
+    background: rgba(0,0,0,0.02);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.explanation h4 {
+    margin: 0 0 6px 0;
+    font-size: 0.95em;
+}
+
+.explanation p {
+    margin: 0;
+    color: #374151;
 }
 
 /* Footer */

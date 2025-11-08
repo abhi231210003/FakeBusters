@@ -70,6 +70,20 @@
         <div class="result {{ 'result-real' if 'Real' in result or 'Not Spam' in result or 'Ham' in result else 'result-fake' }}">
             <h3>Prediction Result:</h3>
             <p>{{ result }}</p>
+            {% if probability is not none %}
+            <div class="probability">
+                <div class="prob-label">Probability {% if task=='fake_news' %}of Fake News{% else %}of Spam{% endif %}: <strong>{{ probability }}%</strong></div>
+                <div class="prob-bar">
+                    <div class="prob-fill" style="width: {{ probability }}%;"></div>
+                </div>
+            </div>
+            {% endif %}
+            {% if explanation %}
+            <div class="explanation">
+                <h4>Why this prediction?</h4>
+                <p>{{ explanation }}</p>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>

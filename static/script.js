@@ -122,6 +122,10 @@ window.onload = function() {
     loadTheme();
     setPlaceholder();
     
-    // Clear form on page load/refresh (mimics clear button behavior)
-    clearForm();
+    // Only clear form automatically when there is no server-rendered result.
+    // If the server provided a result (after prediction via PRG), keep it visible.
+    const resultDiv = document.querySelector('.result');
+    if (!resultDiv) {
+        clearForm();
+    }
 };
