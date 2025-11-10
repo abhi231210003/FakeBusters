@@ -76,7 +76,8 @@ body.dark-theme .loading-spinner p {
 
 /* Theme Toggle Button Container */
 .theme-toggle-container {
-    position: fixed;
+    /* make toggle scroll with the page instead of being fixed to the viewport */
+    position: absolute;
     top: 25px;
     right: 50px;
     display: flex;
@@ -170,17 +171,18 @@ body.dark-theme .theme-label {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 30px;
 }
 
 .container {
     background: white;
-    padding: 30px;
+    padding: 34px;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    max-width: 420px;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+    max-width: 720px; /* increased width for wider card */
     width: 100%;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 h2 {
