@@ -73,7 +73,7 @@
                 <div class="spinner"></div>
                 <p>Analyzing...</p>
             </div>
-            {% if result %}
+            {% if result and 'CSV processed' not in result %}
             <div class="result {{ 'result-real' if 'Real' in result or 'Not Spam' in result or 'Ham' in result else 'result-fake' }}">
                 <h3>Prediction Result:</h3>
                 <p>{{ result }}</p>
@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 {% endif %}
-                {% if explanation %}
+                {% if explanation and ('Fake News' in result or 'Spam Message' in result) %}
                 <div class="explanation">
                     <h4>Why this prediction?</h4>
                     <p>{{ explanation }}</p>
@@ -97,11 +97,9 @@
 
             <!-- CSV Upload / Batch Predictions tab content -->
             <div id="csvTab" class="tab-content {% if active_tab=='csv' %}active{% endif %}" {% if active_tab!='csv' %}style="display:none;"{% endif %}>
-                <div class="csv-upload" style="margin-top:6px;">
-                    <h3>Batch CSV Upload</h3>
-                    <p style="margin:6px 0 10px; color: #555;">Upload a CSV containing a text column (e.g. <code>message</code>, <code>text</code>, <code>content</code>). The server will return a CSV with added <strong>prediction</strong> and <strong>probability</strong> columns.</p>
+                <div class="csv-upload">
                     <form action="/predict_csv" method="post" enctype="multipart/form-data" id="csvForm">
-                        <label for="taskCsv">Select task:</label>
+                        <label for="taskCsv">Choose Functionality:</label>
                         <select name="task" id="taskCsv">
                             <option value="fake_news">Fake News Detection</option>
                             <option value="spam">Spam Email Detection</option>
@@ -111,15 +109,9 @@
                         <input type="file" name="file" id="csvFile" accept=".csv" required>
                         <div class="file-meta"><span id="csvFilename" class="csv-filename">No file chosen</span></div>
 
-                        <label for="textColumn">Text column name (optional):</label>
-                        <input type="text" name="text_column" id="textColumn" placeholder="message">
-
-                        <label for="threshold">Confidence threshold (optional %):</label>
-                        <input type="number" name="threshold" id="threshold" min="0" max="100" step="0.1" placeholder="e.g. 50">
-
                         <div class="button-group">
                             <button type="submit">Upload & Predict</button>
-                            <button type="button" onclick="document.getElementById('csvFile').value = ''; document.getElementById('textColumn').value = ''; document.getElementById('threshold').value = '';">Clear</button>
+                            <button type="button" id="csvClearBtn" onclick="document.getElementById('csvFile').value = ''; document.getElementById('csvFilename').textContent = 'No file chosen';">Clear</button>
                         </div>
                     </form>
                     {% if csv_preview %}
