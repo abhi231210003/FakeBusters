@@ -113,8 +113,63 @@ document.getElementById('predictionForm').addEventListener('submit', function() 
     document.getElementById('predictBtn').disabled = true;
 });
 
+// CSV form - show simple uploading indicator by disabling submit
+const csvForm = document.getElementById('csvForm');
+if (csvForm) {
+    csvForm.addEventListener('submit', function() {
+        // disable submit to avoid double uploads
+        const btn = csvForm.querySelector('button[type=submit]');
+        if (btn) btn.disabled = true;
+    });
+}
+
+// show selected CSV filename
+const csvFileInput = document.getElementById('csvFile');
+const csvFilenameSpan = document.getElementById('csvFilename');
+if (csvFileInput && csvFilenameSpan) {
+    csvFileInput.addEventListener('change', function(e) {
+        const f = e.target.files && e.target.files[0];
+        if (f) {
+            csvFilenameSpan.textContent = `${f.name} (${Math.round(f.size/1024)} KB)`;
+        } else {
+            csvFilenameSpan.textContent = 'No file chosen';
+        }
+    });
+}
+
 // Theme toggle button event listener
 document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+// Tab switching logic
+function switchTab(targetId) {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    const btn = Array.from(tabs).find(b => b.dataset && b.dataset.target === targetId);
+    if (btn) btn.classList.add('active');
+
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(c => {
+        if (c.id === targetId) {
+            c.style.display = '';
+        } else {
+            c.style.display = 'none';
+        }
+    });
+
+    // if switching to CSV tab, hide single-result area to avoid confusion
+    if (targetId === 'csvTab') {
+        const resultDiv = document.querySelector('.result');
+        if (resultDiv) resultDiv.style.display = 'none';
+    }
+}
+
+// Attach tab buttons
+document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const target = e.currentTarget.dataset.target;
+        if (target) switchTab(target);
+    });
+});
 
 // Initialize placeholder on page load (without clearing)
 window.onload = function() {
@@ -127,5 +182,20 @@ window.onload = function() {
     const resultDiv = document.querySelector('.result');
     if (!resultDiv) {
         clearForm();
+    }
+    
+    // Tab initialization: respect server-set visibility, don't force switch
+    // The server already set the correct tab active and visible via inline styles
+    // We just ensure the tab buttons and content are in sync
+    const activeBtn = document.querySelector('.tab.active');
+    if (activeBtn && activeBtn.dataset && activeBtn.dataset.target) {
+        const targetId = activeBtn.dataset.target;
+        // Only adjust content visibility if it's not already correct
+        const targetContent = document.getElementById(targetId);
+        if (targetContent && targetContent.style.display === 'none') {
+            // Server said this tab is active but client hid it - fix it
+            switchTab(targetId);
+        }
+        // Otherwise trust the server's initial state
     }
 };

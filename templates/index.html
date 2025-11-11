@@ -44,48 +44,117 @@
     <div class="wrapper">
         <div class="container">
             <h2>FakeBuster: Fake News & Spam Detection</h2>
-        <form action="/predict" method="post" id="predictionForm">
-            <label for="task">Choose Functionality:</label>
-            <select name="task" id="task" onchange="updatePlaceholder()">
-                <option value="fake_news" {% if task == "fake_news" %}selected{% endif %}>Fake News Detection</option>
-                <option value="spam" {% if task == "spam" %}selected{% endif %}>Spam Email Detection</option>
-            </select>
 
-            <label for="message">Enter your text:</label>
-            <textarea name="message" id="message" rows="6" placeholder="Enter news headline or article here...">{{ message or '' }}</textarea>
-
-            <div class="button-group">
-                <button type="submit" id="predictBtn">Predict</button>
-                <button type="button" id="clearBtn" onclick="clearForm()">Clear</button>
+            <!-- Tabs for Single Text / CSV Upload -->
+            <div class="tabs" role="tablist" aria-label="Input mode tabs">
+                <button type="button" class="tab {% if active_tab=='single' %}active{% endif %}" data-target="singleTab">Single Text</button>
+                <button type="button" class="tab {% if active_tab=='csv' %}active{% endif %}" data-target="csvTab">CSV Upload</button>
             </div>
-        </form>
 
-        <!-- Loading Spinner -->
-        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
-            <div class="spinner"></div>
-            <p>Analyzing...</p>
-        </div>
+            <div id="singleTab" class="tab-content {% if active_tab=='single' %}active{% endif %}" {% if active_tab!='single' %}style="display:none;"{% endif %}>
+            <form action="/predict" method="post" id="predictionForm">
+                <label for="task">Choose Functionality:</label>
+                <select name="task" id="task" onchange="updatePlaceholder()">
+                    <option value="fake_news" {% if task == "fake_news" %}selected{% endif %}>Fake News Detection</option>
+                    <option value="spam" {% if task == "spam" %}selected{% endif %}>Spam Email Detection</option>
+                </select>
 
-        {% if result %}
-        <div class="result {{ 'result-real' if 'Real' in result or 'Not Spam' in result or 'Ham' in result else 'result-fake' }}">
-            <h3>Prediction Result:</h3>
-            <p>{{ result }}</p>
-            {% if probability is not none %}
-            <div class="probability">
-                <div class="prob-label">Probability {% if task=='fake_news' %}of Fake News{% else %}of Spam{% endif %}: <strong>{{ probability }}%</strong></div>
-                <div class="prob-bar">
-                    <div class="prob-fill" style="width: {{ probability }}%;"></div>
+                <label for="message">Enter your text:</label>
+                <textarea name="message" id="message" rows="6" placeholder="Enter news headline or article here...">{{ message or '' }}</textarea>
+
+                <div class="button-group">
+                    <button type="submit" id="predictBtn">Predict</button>
+                    <button type="button" id="clearBtn" onclick="clearForm()">Clear</button>
+                </div>
+            </form>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing...</p>
+            </div>
+            {% if result %}
+            <div class="result {{ 'result-real' if 'Real' in result or 'Not Spam' in result or 'Ham' in result else 'result-fake' }}">
+                <h3>Prediction Result:</h3>
+                <p>{{ result }}</p>
+                {% if probability is not none %}
+                <div class="probability">
+                    <div class="prob-label">Probability {% if task=='fake_news' %}of Fake News{% else %}of Spam{% endif %}: <strong>{{ probability }}%</strong></div>
+                    <div class="prob-bar">
+                        <div class="prob-fill" style="width: {{ probability }}%;"></div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if explanation %}
+                <div class="explanation">
+                    <h4>Why this prediction?</h4>
+                    <p>{{ explanation }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            </div>
+
+            <!-- CSV Upload / Batch Predictions tab content -->
+            <div id="csvTab" class="tab-content {% if active_tab=='csv' %}active{% endif %}" {% if active_tab!='csv' %}style="display:none;"{% endif %}>
+                <div class="csv-upload" style="margin-top:6px;">
+                    <h3>Batch CSV Upload</h3>
+                    <p style="margin:6px 0 10px; color: #555;">Upload a CSV containing a text column (e.g. <code>message</code>, <code>text</code>, <code>content</code>). The server will return a CSV with added <strong>prediction</strong> and <strong>probability</strong> columns.</p>
+                    <form action="/predict_csv" method="post" enctype="multipart/form-data" id="csvForm">
+                        <label for="taskCsv">Select task:</label>
+                        <select name="task" id="taskCsv">
+                            <option value="fake_news">Fake News Detection</option>
+                            <option value="spam">Spam Email Detection</option>
+                        </select>
+
+                        <label for="csvFile">Choose CSV file:</label>
+                        <input type="file" name="file" id="csvFile" accept=".csv" required>
+                        <div class="file-meta"><span id="csvFilename" class="csv-filename">No file chosen</span></div>
+
+                        <label for="textColumn">Text column name (optional):</label>
+                        <input type="text" name="text_column" id="textColumn" placeholder="message">
+
+                        <label for="threshold">Confidence threshold (optional %):</label>
+                        <input type="number" name="threshold" id="threshold" min="0" max="100" step="0.1" placeholder="e.g. 50">
+
+                        <div class="button-group">
+                            <button type="submit">Upload & Predict</button>
+                            <button type="button" onclick="document.getElementById('csvFile').value = ''; document.getElementById('textColumn').value = ''; document.getElementById('threshold').value = '';">Clear</button>
+                        </div>
+                    </form>
+                    {% if csv_preview %}
+                    <div class="csv-preview" style="margin-top:14px;">
+                        <h4>Preview (first {{ csv_preview|length }} rows)</h4>
+                        <div class="preview-table" style="overflow:auto; margin-top:8px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        {% for col in csv_preview[0].keys() %}
+                                        <th>{{ col }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in csv_preview %}
+                                    <tr>
+                                        {% for v in row.values() %}
+                                        <td>{{ v }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:10px; display:flex; gap:10px;">
+                            <a class="button" href="{{ url_for('download_predictions') }}">Download CSV with predictions</a>
+                            <a class="button" href="{{ url_for('clear_predictions') }}">Clear Preview</a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
-            {% endif %}
-            {% if explanation %}
-            <div class="explanation">
-                <h4>Why this prediction?</h4>
-                <p>{{ explanation }}</p>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
+
+        
     </div>
     
     <footer class="footer">

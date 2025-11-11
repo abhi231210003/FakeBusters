@@ -185,6 +185,215 @@ body.dark-theme .theme-label {
     margin: 0 auto;
 }
 
+/* Tabs */
+.tabs {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    margin: 8px 0 16px;
+}
+.tab {
+    flex: 1 1 50%;
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-bottom: none;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #0453a8;
+    text-align: center;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: none; /* ensure unselected tabs do not show the global button shadow */
+}
+.tab + .tab {
+    margin-left: 0; /* ensure tabs sit flush */
+}
+.tab:hover {
+    background: rgba(0,0,0,0.02);
+}
+.tab.active {
+    background: white;
+    /* active tab gets a subtle inner top shadow to appear selected */
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08) inset;
+}
+.tab-content {
+    margin-top: 8px;
+}
+
+/* CSV upload form layout and styles */
+.csv-upload {
+    /* Remove separate background to match single text style */
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+}
+.csv-upload h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.05em;
+    color: #03396c;
+}
+.csv-upload p {
+    margin: 0 0 12px 0;
+}
+.csv-upload form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    align-items: center;
+}
+.csv-upload label {
+    grid-column: 1 / 2;
+    margin: 0;
+    font-weight: 600;
+}
+.csv-upload input[type="file"] {
+    grid-column: 2 / 3;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px dashed rgba(0,0,0,0.12);
+    background: #fff;
+}
+.file-meta {
+    grid-column: 2 / 3;
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 4px;
+}
+.csv-filename {
+    display: inline-block;
+    background: rgba(2, 136, 209, 0.06);
+    color: #025aa5;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+.csv-upload input[type="text"],
+.csv-upload select,
+.csv-upload input[type="number"] {
+    grid-column: 2 / 3;
+    padding: 8px 10px;
+    border-radius: 8px;
+}
+.csv-upload .button-group {
+    grid-column: 1 / 3;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.csv-preview table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+.csv-preview th, .csv-preview td {
+    padding: 8px 10px;
+    border: 1px solid rgba(0,0,0,0.06);
+    text-align: left;
+    font-size: 0.95em;
+    width: 150px;
+    max-width: 150px;
+    min-width: 100px;
+    height: 45px;
+    max-height: 45px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+}
+.csv-preview td {
+    overflow: auto;
+    white-space: normal;
+    word-wrap: break-word;
+}
+.csv-preview thead th {
+    background: rgba(2,136,209,0.06);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.csv-preview .button {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #0066cc;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.csv-preview .button:hover { background: #0055aa; }
+
+@media (max-width: 700px) {
+    .csv-upload form {
+        grid-template-columns: 1fr;
+    }
+    .csv-upload label, .csv-upload input[type="file"], .csv-upload input[type="text"], .csv-upload select, .csv-upload input[type="number"], .file-meta {
+        grid-column: 1 / -1;
+    }
+    .csv-upload .button-group { justify-content: stretch; flex-direction: column; }
+}
+
+/* Dark-mode overrides for CSV upload area */
+body.dark-theme .csv-upload {
+    /* Keep transparent background in dark mode too */
+    background: transparent;
+    border: none;
+    color: #d6d6d6;
+}
+body.dark-theme .csv-upload h3 {
+    color: #7fb3ff;
+}
+body.dark-theme .csv-upload p {
+    color: #bfc7d1;
+}
+body.dark-theme .csv-upload input[type="file"],
+body.dark-theme .csv-upload input[type="text"],
+body.dark-theme .csv-upload select,
+body.dark-theme .csv-upload input[type="number"] {
+    background: #1f2328;
+    color: #e6eefb;
+    border: 1px dashed rgba(255,255,255,0.04);
+}
+body.dark-theme .file-meta,
+body.dark-theme .csv-filename {
+    color: #bcdcff;
+}
+body.dark-theme .csv-filename {
+    background: rgba(77,166,255,0.06);
+    color: #9ecbff;
+}
+body.dark-theme .csv-upload .button-group button {
+    background-color: #065fb4;
+    color: #fff;
+}
+body.dark-theme .csv-upload .button-group button:hover {
+    background-color: #054e95;
+}
+
+/* Dark theme for CSV preview table */
+body.dark-theme .csv-preview table {
+    border-color: rgba(255,255,255,0.08);
+}
+body.dark-theme .csv-preview th,
+body.dark-theme .csv-preview td {
+    border-color: rgba(255,255,255,0.08);
+    color: #e0e0e0;
+}
+body.dark-theme .csv-preview thead th {
+    background: rgba(77,166,255,0.08);
+    color: #9ecbff;
+}
+
+/* Tab dark adjustments */
+body.dark-theme .tab {
+    color: #9fbef7;
+}
+body.dark-theme .tab.active {
+    background: #17181a;
+}
+
 h2 {
     text-align: center;
     margin-bottom: 25px;
