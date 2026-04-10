@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="banner.png" alt="FakeBusters Banner" width="800">
-</p>
 
 # 🧠 FakeNews_Spam_Detection
 
